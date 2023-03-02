@@ -1,5 +1,5 @@
 locals {
-    data_lake_bucket = "de_project_data_lake"
+    data_lake_bucket = "accidents_data_lake"
 }
 
 variable "project" {
@@ -19,6 +19,6 @@ variable "storage_class" {
 
 variable "BQ_DATASET" {
     description = "BigQuery Dataset that raw data (from GCS) will be written to"
-    default = "us_accidents"
+    default = "accidents_data_all"
     type = string
 }
