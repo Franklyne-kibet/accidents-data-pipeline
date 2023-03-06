@@ -11,7 +11,7 @@
 **/accidents_postgres_data/*
 serving_dir
 *.csv
-.ipynb_checkpoints/
+*.ipynb_checkpoints/
 *.gz
 *.parquet
 *.zip
