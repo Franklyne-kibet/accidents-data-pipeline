@@ -36,7 +36,7 @@ def load_data(table_name, df):
     connection_block = SqlAlchemyConnector.load("postgres-connector")
     with connection_block.get_connection(begin=False) as engine: 
         chunksize = 100000       
-        df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace')
+        df.head(n=0).to_sql(name=table_name, con=engine, if_exists='replace', index=False)
         for i, chunk in enumerate(df.groupby(df.index // chunksize)):
             print(f"Inserting chunk {i+1} of {len(df)//chunksize+1}")
             chunk[1].to_sql(name=table_name, con=engine, if_exists='append', index=False)
