@@ -10,7 +10,7 @@ from prefect.tasks import task_input_hash
 from datetime import timedelta
 
 
-@task(name="Extract Data From Web", log_prints=True, tags=['extract'], cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
+@task(name="Extract Data From Web", log_prints=True, tags=['extract'])
 def extract_data(dataset_name:str):
 # Set the dataset and file paths
     csv_file = 'data/us-accidents.zip'
@@ -101,7 +101,14 @@ def transform_data(csv_name: str,spark:str, accidents_schema:str) -> pd.DataFram
 @task(name="Write to GCS", log_prints=True)
 def upload_to_gcs(output_path:str):
     os.system(f"gsutil -m cp -r {output_path} gs://accidents_data_lake/")
-    
+
+@task(name="Write to BigQuery", log_prints=True)
+def upload_to_bq():    
+    os.system(f"bq load \
+        --source_format=PARQUET \
+        de-project-franklyne:accidents_data_all.tests \
+        gs://accidents_data_lake/pq/*.parquet ")
+       
 @flow()
 def etl_web_to_gcs():
     """Main ETL function"""
@@ -112,6 +119,7 @@ def etl_web_to_gcs():
     schema = data_schema()
     clean_data = transform_data(data, spark, schema)
     upload_to_gcs(clean_data)
+    upload_to_bq()
 
 if __name__  == '__main__':
     etl_web_to_gcs()
