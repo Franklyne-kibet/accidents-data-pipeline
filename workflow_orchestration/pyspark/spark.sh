@@ -10,4 +10,4 @@ URL="local[*]"
 spark-submit \
     --master="${URL}" \
     --driver-memory 2g \
-    flows/etl_web_gcs.py
+    pyspark/etl_web_to_gcs.py

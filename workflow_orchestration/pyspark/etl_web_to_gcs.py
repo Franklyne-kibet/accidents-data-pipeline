@@ -100,7 +100,7 @@ def transform_data(csv_name: str,spark:str, accidents_schema:str) -> pd.DataFram
 
 @task(name="Write to GCS", log_prints=True)
 def upload_to_gcs(output_path:str):
-    os.system(f"gsutil -m cp -r {output_path} gs://accidents_data_lake/data/")
+    os.system(f"gsutil -m cp -r {output_path} gs://accidents_data_lake/")
     
 @flow()
 def etl_web_to_gcs():
