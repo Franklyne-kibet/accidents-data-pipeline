@@ -1,0 +1,12 @@
+version: 2
+
+macros:
+    - name: get_accident_severity
+      description: > 
+        This macro receives accident severity and returns the corresponding description.
+      arguments:
+        - name: severity
+          type: int
+          description: >
+            accident_severity value.
+            Must be one of the accepted values, otherwise the macro will return null

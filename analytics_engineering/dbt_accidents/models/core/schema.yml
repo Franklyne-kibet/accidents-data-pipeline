@@ -1,0 +1,8 @@
+version: 2
+
+models:
+  - name: fact_accidents
+    description: >
+      The Table contains US accidents  across different states from the year 2016 to 2021.
+      The Table contains columns describing data attributes.
+      Each record corresponds to a accident uniquely identified by accident_id.

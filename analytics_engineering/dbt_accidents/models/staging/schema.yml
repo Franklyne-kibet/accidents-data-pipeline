@@ -1,0 +1,136 @@
+# schema.yml
+version: 2
+
+sources:
+    - name: staging
+      database: de-project-franklyne
+      schema: accidents_data_project
+
+      tables:
+          - name: accidents_data
+
+models:
+    - name: stg_accidents_data
+      description: >
+        This is a countrywide traffic accident dataset, which covers 49 states of the United States.
+        The data is continuously being collected from February 2016,
+        using several data providers,
+        including multiple APIs that provide streaming traffic event data.
+        These APIs broadcast traffic events captured by a variety of entities,
+        such as the US and state departments of transportation,
+        law enforcement agencies, traffic cameras, and traffic sensors within the road-networks.
+      columns:
+          - name: accident_id
+            description: Primary key for this table, generated with a concatenation of ID+Start_Time.
+            tests:
+              - unique:
+                  severity: warn
+              - not_null:
+                  severity: warn
+          - name: Id
+            description: This is a unique identifier of the accident record.
+          - name: severity
+            description: >
+              Shows the severity of the accident, a number between 1 and 4, 
+              where 1 indicates the least impact on traffic (i.e.,
+              short delay as a result of the accident) 
+              and 4 indicates a significant impact on traffic (i.e., long delay).
+            tests:
+              - accepted_values:
+                  values: "{{ var('accident_severity_values') }}"
+                  severity: warn
+                  quote: False
+          - name: severity_description
+            description: Description of accidents severity
+          - name: start_time
+            description: Shows start time of the accident in local time zone.
+          - name: end_time
+            description: >
+              Shows end time of the accident in local time zone.
+              End time here refers to when the impact of accident on traffic flow was dismissed.
+          - name: weather_timestamp
+            description: Shows the time-stamp of weather observation record (in local time)
+          - name: start_lat
+            description: Shows latitude in GPS coordinate of the start point.
+          - name: start_lng
+            description: Shows longitude in GPS coordinate of the start point.
+          - name: end_lat
+            description: Shows latitude in GPS coordinate of the end point.
+          - name: end_lng
+            description: Shows longitude in GPS coordinate of the end point.
+          - name: distance_miles
+            description: The length of the road extent affected by the accident.
+          - name: description
+            description: Shows natural language description of the accident.
+          - name: number
+            description: Shows the street number in address field.
+          - name: street
+            description: Shows the street name in address field.
+          - name: side
+            description: Shows the relative side of the street (Right/Left) in address field.
+          - name: city
+            description: Shows the city in address field.
+          - name: county
+            description: Shows the county in address field.
+          - name: state
+            description: Shows the state in address field.
+          - name: zipcode
+            description: Shows the zipcode in address field.           
+          - name: country
+            description: Shows the country in address field.
+          - name: timezone
+            description: Shows timezone based on the location of the accident (eastern, central, etc.).
+          - name: airport_code
+            description: Denotes an airport-based weather station which is the closest one to location of the accident.
+          - name: temperature
+            description: Shows the temperature (in Fahrenheit).
+          - name: wind_chill
+            description: Shows the wind chill (in Fahrenheit).
+          - name: humidity
+            description: Shows the humidity (in percentage).
+          - name: pressure
+            description: Shows the air pressure (in inches).
+          - name: visibility
+            description: Shows visibility (in miles).
+          - name: wind_direction
+            description: Shows wind direction.
+          - name: wind_speed
+            description: Shows wind speed (in miles per hour).
+          - name: precipitation
+            description: Shows precipitation amount in inches, if there is any.
+          - name: weather_condition
+            description: Shows the weather condition (rain, snow, thunderstorm, fog, etc.)
+          - name: amenity
+            description: A POI annotation which indicates presence of amenity in a nearby location.
+          - name: bump
+            description: A POI annotation which indicates presence of speed bump or hump in a nearby location.
+          - name: crossing
+            description: A POI annotation which indicates presence of crossing in a nearby location
+          - name: give_way
+            description: A POI annotation which indicates presence of give_way in a nearby location.
+          - name: junction
+            description: A POI annotation which indicates presence of junction in a nearby location.
+          - name: no_exit
+            description: A POI annotation which indicates presence of no_exit in a nearby location.
+          - name: railway
+            description: A POI annotation which indicates presence of railway in a nearby location.
+          - name: roundabout
+            description: A POI annotation which indicates presence of roundabout in a nearby location.
+          - name: station
+            description: A POI annotation which indicates presence of station in a nearby location.
+          - name: stop
+            description: A POI annotation which indicates presence of stop in a nearby location.
+          - name: traffic_calming
+            description: A POI annotation which indicates presence of traffic_calming in a nearby location.
+          - name: traffic_signal
+            description: A POI annotation which indicates presence of traffic_signal in a nearby loction.
+          - name: turning_loop
+            description: A POI annotation which indicates presence of turning_loop in a nearby location.
+          - name: sunrise_sunset
+            description: Shows the period of day (i.e. day or night) based on sunrise/sunset.
+          - name: civil_twilight
+            description: Shows the period of day (i.e. day or night) based on civil twilight.
+          - name: nautical_twilight
+            description: Shows the period of day (i.e. day or night) based on nautical twilight.
+          - name: astronomical_twilight
+            description: Shows the period of day (i.e. day or night) based on astronomical twilight.
