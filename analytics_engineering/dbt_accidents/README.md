@@ -26,7 +26,7 @@ A project includes the following files:
 
 ### Execution
 
-We are runnning our project in dbt cloud:
+We are runnning the project in dbt cloud:
 
 1) Create a Production Environment and configure it accordingly.
 
