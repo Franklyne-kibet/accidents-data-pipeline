@@ -73,18 +73,18 @@ Note: all code should be run from the top level of your folder to keep file path
 
 3) Interface docker container with orion server
 
-```python
-prefect config set PREFECT_API_URL="insert_your_url/api"
-```
+   ```python
+   prefect config set PREFECT_API_URL="insert_your_url/api"
+   ```
 
 4) Start prefect agent
 
-```python
-prefect agent start -q default
-```
+   ```python
+   prefect agent start -q default
+   ```
 
 5) Run flow (runs in docker container)
 
-```python
-prefect deployment run etl_web_to_gcs/docker-flow
-```
+   ```python
+   prefect deployment run etl_web_to_gcs/docker-flow
+   ```
