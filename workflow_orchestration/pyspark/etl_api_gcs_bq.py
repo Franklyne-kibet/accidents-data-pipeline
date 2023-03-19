@@ -110,7 +110,7 @@ def upload_to_bq():
         gs://accidents_data_lake/pq/*.parquet ")
        
 @flow()
-def etl_web_to_gcs():
+def etl_api_gcs_bq():
     """Main ETL function"""
     dataset_name  = "sobhanmoosavi/us-accidents"
     
@@ -122,4 +122,4 @@ def etl_web_to_gcs():
     upload_to_bq()
 
 if __name__  == '__main__':
-    etl_web_to_gcs()
+    etl_api_gcs_bq()
