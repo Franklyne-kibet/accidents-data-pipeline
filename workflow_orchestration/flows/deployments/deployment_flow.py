@@ -1,75 +1,125 @@
 import os
 import pandas as pd
-from pathlib import Path
+
+import pyspark
+from pyspark.sql import SparkSession
+from pyspark.sql import types
 
 from prefect import flow, task
 from prefect.tasks import task_input_hash
 from datetime import timedelta
-from prefect_gcp.cloud_storage import GcsBucket
 
-@task(log_prints=True,tags=['extract'], cache_key_fn=task_input_hash, cache_expiration=timedelta(days=1))
-def extract_data(dataset_name:str) -> pd.DataFrame:
-    """Download accidents data from kaggle into pandas DataFrame"""
-    csv_name = "data/us-accidents.zip"
-    
-    os.system(f"kaggle datasets download -d {dataset_name} -p data")
-    
-    df = pd.read_csv(csv_name)
-    
-    return df
 
-@task(log_prints=True)
-def transform_data(df:pd.DataFrame) -> pd.DataFrame:
-    """Fix Dtypes issues"""
-    df['Start_Time'] = pd.to_datetime(df['Start_Time']).dt.round('us')
-    df['End_Time'] = pd.to_datetime(df['End_Time']).dt.round('us')
-    df['Weather_Timestamp'] = pd.to_datetime(df['Weather_Timestamp']).dt.round('us')
-    df = df.rename(columns={
-        'Distance(mi)': 'Distance_miles',
-        'Temperature(F)': 'Temperature_F',
-        'Wind_Chill(F)': 'Wind_Chill_F',
-        'Humidity(%)': 'Humidity_perc',
-        'Pressure(in)': 'Pressure_inches',
-        'Visibility(mi)': 'Visibility_miles',
-        'Wind_Speed(mph)': 'Wind_Speed_mph',
-        'Precipitation(in)': 'Precipitation_inches'
-    })
-    
-    print(f"columns:{df.dtypes}")
-    print(f"rows: {len(df)}")
-    
-    return df
+@task(name="Extract Data From Web", log_prints=True, tags=['extract'])
+def extract_data(dataset_name:str):
+# Set the dataset and file paths
+    csv_file = 'data/us-accidents.zip'
 
-@task(log_prints=True)
-def write_local(df:pd.DataFrame, dataset_file:str) -> Path:
-    """Write DataFrame out as Parquet file"""
-    path = Path(f"data/{dataset_file}.parquet")
-    df.to_parquet(path, compression='gzip')
+    dataset_name = 'sobhanmoosavi/us-accidents'
+    os.system(f'kaggle datasets download -d {dataset_name} -p data')
+    os.system(f'unzip {csv_file} -d data')
+
+    csv_name = 'data/US_Accidents_Dec21_updated.csv'
+    return csv_name
+
+@task(name="Build Spark Session", log_prints=True)
+def spark_session():
+    spark = SparkSession.builder \
+        .appName('workflow') \
+        .getOrCreate()
+        
+    return spark
+@task(name="accidents_schema", log_prints=True)
+def data_schema():
+    accidents_schema = types.StructType([
+        types.StructField('ID', types.StringType(), True),
+        types.StructField('Severity', types.IntegerType(), True),
+        types.StructField('Start_Time', types.TimestampType(), True),
+        types.StructField('End_Time', types.TimestampType(), True),
+        types.StructField('Start_Lat', types.DoubleType(), True),
+        types.StructField('Start_Lng', types.DoubleType(), True),
+        types.StructField('End_Lat', types.DoubleType(), True),
+        types.StructField('End_Lng', types.DoubleType(), True),
+        types.StructField('Distance_miles', types.DoubleType(), True),
+        types.StructField('Description', types.StringType(), True),
+        types.StructField('Number', types.DoubleType(), True),
+        types.StructField('Street', types.StringType(), True),
+        types.StructField('Side', types.StringType(), True),
+        types.StructField('City', types.StringType(), True),
+        types.StructField('County', types.StringType(), True),
+        types.StructField('State', types.StringType(), True),
+        types.StructField('Zipcode', types.StringType(), True),
+        types.StructField('Country', types.StringType(), True),
+        types.StructField('Timezone', types.StringType(), True),
+        types.StructField('Airport_Code', types.StringType(), True),
+        types.StructField('Weather_Timestamp', types.TimestampType(), True),
+        types.StructField('Temperature_F', types.DoubleType(), True),
+        types.StructField('Wind_Chill_F', types.DoubleType(), True),
+        types.StructField('Humidity_perc', types.DoubleType(), True),
+        types.StructField('Pressure_inches', types.DoubleType(), True),
+        types.StructField('Visibility_miles', types.DoubleType(), True),
+        types.StructField('Wind_Direction', types.StringType(), True),
+        types.StructField('Wind_Speed_mph', types.DoubleType(), True),
+        types.StructField('Precipitation_inches', types.DoubleType(), True),
+        types.StructField('Weather_Condition', types.StringType(), True),
+        types.StructField('Amenity', types.BooleanType(), True),
+        types.StructField('Bump', types.BooleanType(), True),
+        types.StructField('Crossing', types.BooleanType(), True),
+        types.StructField('Give_Way', types.BooleanType(), True),
+        types.StructField('Junction', types.BooleanType(), True),
+        types.StructField('No_Exit', types.BooleanType(), True),
+        types.StructField('Railway', types.BooleanType(), True),
+        types.StructField('Roundabout', types.BooleanType(), True),
+        types.StructField('Station', types.BooleanType(), True),
+        types.StructField('Stop', types.BooleanType(), True),
+        types.StructField('Traffic_Calming', types.BooleanType(), True),
+        types.StructField('Traffic_Signal', types.BooleanType(), True),
+        types.StructField('Turning_Loop', types.BooleanType(), True),
+        types.StructField('Sunrise_Sunset', types.StringType(), True),
+        types.StructField('Civil_Twilight', types.StringType(), True),
+        types.StructField('Nautical_Twilight', types.StringType(), True),
+        types.StructField('Astronomical_Twilight', types.StringType(), True)
+    ])
     
-    return path
+    return accidents_schema
 
-@task(log_prints=True, retries=3)
-def upload_to_gcs(path: Path) -> None:
-    """Upload local parquet files to GCS"""
-    gcs_block = GcsBucket.load("project-gcs")
-    path = Path(path).as_posix()
-    gcs_block.upload_from_path(
-        from_path = path,
-        to_path = path,
-        timeout = (10,2000)
-    )
-    return
+@task(name="Data Transformation", log_prints=True)
+def transform_data(csv_name: str,spark:str, accidents_schema:str) -> pd.DataFrame:
+    output_path = "data/pq/"
+    
+    df_accidents = spark.read \
+        .option("header","true") \
+        .schema(accidents_schema) \
+        .csv(csv_name)
 
+    df_accidents \
+        .repartition(24) \
+        .write.parquet(output_path, mode='overwrite')
+    
+    return output_path
+
+@task(name="Write to GCS", log_prints=True)
+def upload_to_gcs(output_path:str):
+    os.system(f"gsutil -m cp -r {output_path} gs://accidents_data_lake/")
+
+@task(name="Write to BigQuery", log_prints=True)
+def upload_to_bq():    
+    os.system(f"bq load \
+        --source_format=PARQUET \
+        de-project-franklyne:accidents_data_all.tests \
+        gs://accidents_data_lake/pq/*.parquet ")
+       
 @flow()
-def etl_web_to_gcs():
-    """The Main ETL function"""
+def etl_api_gcs_bq():
+    """Main ETL function"""
     dataset_name  = "sobhanmoosavi/us-accidents"
-    dataset_file = "us_accidents_2016-2021"
     
-    df = extract_data(dataset_name)
-    raw_data = transform_data(df)
-    local = write_local(raw_data, dataset_file)
-    upload_to_gcs(local)
+    data = extract_data(dataset_name)
+    spark = spark_session()
+    schema = data_schema()
+    clean_data = transform_data(data, spark, schema)
+    upload_to_gcs(clean_data)
+    upload_to_bq()
 
-if __name__ == '__main__':
-    etl_web_to_gcs()
+if __name__  == '__main__':
+    etl_api_gcs_bq()
