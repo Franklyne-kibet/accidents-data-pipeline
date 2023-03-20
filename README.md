@@ -144,4 +144,4 @@ The link to lookerstudio dashboard showing the analytics of US Accidents country
 Many thanks to:
 
 - DataTalks.Club - for the opportunity to learn more about data engineering 👏.
-- SOBHAN MOOSAVI - for providing me with the dataset I extracted from Kaggle and used.
+- SOBHAN MOOSAVI - for providing me with the dataset I extracted from Kaggle and used 👏.
