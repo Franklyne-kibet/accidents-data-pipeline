@@ -18,6 +18,7 @@ def extract_data(dataset_name:str):
     dataset_name = 'sobhanmoosavi/us-accidents'
     os.system(f'kaggle datasets download -d {dataset_name} -p data')
     os.system(f'unzip {csv_file} -d data')
+    os.system(f'rm data/{csv_file}.zip')
 
     csv_name = 'data/US_Accidents_Dec21_updated.csv'
     return csv_name
@@ -100,14 +101,15 @@ def transform_data(csv_name: str,spark:str, accidents_schema:str) -> pd.DataFram
 
 @task(name="Write to GCS", log_prints=True)
 def upload_to_gcs(output_path:str):
-    os.system(f"gsutil -m cp -r {output_path} gs://accidents_data_lake/")
+    os.system(f"gsutil -m cp -r {output_path} gs://test_accidents/")
+    os.system(f"rm -f {output_path}*")
 
 @task(name="Write to BigQuery", log_prints=True)
 def upload_to_bq():    
     os.system(f"bq load \
         --source_format=PARQUET \
         de-project-franklyne:accidents_data_all.tests \
-        gs://accidents_data_lake/pq/*.parquet ")
+        gs://test_accidents/pq/*.parquet ")
        
 @flow()
 def etl_api_gcs_bq():
