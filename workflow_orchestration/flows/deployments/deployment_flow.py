@@ -26,6 +26,7 @@ def extract_data(dataset_name:str):
 @task(name="Build Spark Session", log_prints=True)
 def spark_session():
     spark = SparkSession.builder \
+        .master("local[*]") \
         .appName('workflow') \
         .getOrCreate()
         
@@ -102,7 +103,7 @@ def transform_data(csv_name: str,spark:str, accidents_schema:str) -> pd.DataFram
 @task(name="Write to GCS", log_prints=True)
 def upload_to_gcs(output_path:str):
     os.system(f"gsutil -m cp -r {output_path} gs://test_accidents/")
-    os.system(f"rm -f {output_path}*")
+    os.system(f"rm -f {output_path}/*")
 
 @task(name="Write to BigQuery", log_prints=True)
 def upload_to_bq():    

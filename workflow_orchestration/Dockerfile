@@ -32,6 +32,8 @@ ENV SPARK_HOME=/opt/spark-${SPARK_VERSION}-bin-hadoop3
 ENV PATH="${SPARK_HOME}/bin:${PATH}"
 ENV JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64/
 ENV PATH="${JAVA_HOME}/bin:${PATH}"
+ENV PYTHONPATH="${SPARK_HOME}/python/:$PYTHONPATH"
+ENV PYTHONPATH="${SPARK_HOME}/python/lib/py4j-0.10.9.5-src.zip:$PYTHONPATH"
 
 # Install google cloud sdk
 ARG CLOUD_SDK_VERSION=322.0.0
