@@ -52,45 +52,29 @@ prefect block register -m prefect_gcp
 
 Write your Python functions and add `@flow` and `@task` decorators.
 
-Note: all code should be run from the top level of your folder to keep file paths consistent.
+**Note:** all code should be run from the top level of your folder to keep file paths consistent.
 
 ### Create deployments
 
-Docker deployment code is available in deployment folder [here](./flows/deployments/docker_deploy.py)
+Prefect deployment code is available in deployment folder [here](./deployments/deployment_flow.py)
 
-#### Prefect Docker Deployments 
+#### Prefect Deployment
 
-1) Create docker image
-   - `docker image build -t franklyne/prefect:accidents .`
-   - `docker image push franklyne/prefect:accidents`
-   - `docker pull franklyne/prefect:accidents`
+To build a prefect deployment run the command below at the top level of your deployment folder.
 
-2) Prefect docker deployent
+ ```python
+   # prefect deployment build (creates a yaml file)
+   prefect deployment build deployments/deployment_flow.py:etl_parent_flow -n "Pyspark-ETL"
+   # Apply changes
+   prefect deployment apply etl_parent_flow-deployment.yaml
+   # Start prefect agent
+   prefect agent start  --work-queue "default"  
+ ```
 
-   ```python
-   python flows/deployments/docker_deploy.py
-   ```
+#### Scheduling deployment using cron tab
 
-3) Interface docker container with orion server
+This will schedule the deployment to be executed at 5:00 AM on the first day of every month.
 
-   ```python
-   prefect config set PREFECT_API_URL="insert_your_url/api"
-   ```
-
-4) Start prefect agent
-
-   ```python
-   prefect agent start -q default
-   ```
-
-5) Run flow (runs in docker container)
-
-   ```python
-   prefect deployment run etl_api_gcs_bq/docker-flow
-   ```
-
-6) Alternatively you can schedule the deployment to run every day using cron tab:
-
-   ```python
-      prefect deployment run etl_api_gcs_bq/docker-flow -c '0 5 1 * *'
-   ```
+```python
+   prefect deployment build deployments/deployment_flow.py:etl_parent_flow -n "Pyspark-ETL" --cron "0 5 1 * *" -a    
+```
