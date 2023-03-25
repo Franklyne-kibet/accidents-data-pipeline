@@ -115,27 +115,15 @@ The link to lookerstudio dashboard showing the analytics of US Accidents country
 - cd to [workflow_orchestration](./workflow_orchestration/) and run this command to run the ETL pipeline.
   - `prefect orion start`
   - `python pyspark/etl_api_gcs_bq.py`
-- Alternatively, pull the docker image I have pushed to Dockerhub:
+- Alternatively, create a prefect deployment by running the following command :
   
   ```python
-    # Build the docker image  
-    docker pull franklyne/prefect:accidents
+  prefect deployment build deployments/deployment_flow.py:etl_parent_flow -n "Pyspark-ETL"
   ```
 
-  or build the docker image, Go to [workflow.md](./workflow_orchestration/workflow.md)
-
-- Create a docker deployment to run the ETL pipeline.
-  `cd` into [flows](./workflow_orchestration/flows/deployments/) and run the command below:
-
-  ```python
-    python workflow_orchestration/flows/deployments/docker_deploy.py
-  ```
-
-- After creating the deployment, start prefect the agent:
+- More details on how to configure prefect and create deployments in [workflow.md](./workflow_orchestration/workflow.md)
   
-  ```python
-    prefect agent start  --work-queue "default"
-  ```
+- For BigQuery Datawarehouse visit [datawarehouse.md](data_warehouse/datawarehouse.md) for more information.
 
 ---
 
