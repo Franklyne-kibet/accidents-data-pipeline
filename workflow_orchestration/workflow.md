@@ -4,7 +4,7 @@
 
 Prefect is used in this project as workflow orchestration tool in creating ETL workflows to `extract`, `transform`, and `load` data.
 
-I will use Postgres and GCP's Google Cloud Storage and BigQuery.
+I will use GCP's Google Cloud Storage as data lake and BigQuery as data warehouse.
 
 ## Setup
 
