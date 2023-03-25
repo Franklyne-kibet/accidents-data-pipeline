@@ -21,14 +21,7 @@ def extract_data(dataset_name:str):
 
     csv_name = 'data/US_Accidents_Dec21_updated.csv'
     return csv_name
-
-@task(name="Build Spark Session", log_prints=True)
-def spark_session():
-    spark = SparkSession.builder \
-        .appName('workflow') \
-        .getOrCreate()
         
-    return spark
 @task(name="accidents_schema", log_prints=True)
 def data_schema():
     accidents_schema = types.StructType([
@@ -84,8 +77,12 @@ def data_schema():
     return accidents_schema
 
 @task(name="Data Transformation", log_prints=True)
-def transform_data(csv_name: str,spark:str, accidents_schema:str) -> pd.DataFrame:
+def transform_data(csv_name: str,accidents_schema:str) -> pd.DataFrame:
     output_path = "data/pq/"
+    
+    spark = SparkSession.builder \
+        .appName('workflow') \
+        .getOrCreate()
     
     df_accidents = spark.read \
         .option("header","true") \
@@ -115,9 +112,8 @@ def etl_api_gcs_bq():
     dataset_name  = "sobhanmoosavi/us-accidents"
     
     data = extract_data(dataset_name)
-    spark = spark_session()
     schema = data_schema()
-    clean_data = transform_data(data, spark, schema)
+    clean_data = transform_data(data,schema)
     upload_to_gcs(clean_data)
     upload_to_bq()
 
