@@ -8,6 +8,7 @@
     - [Create Service Account](#create-service-account)
     - [Generate SSH key](#generate-ssh-key)
     - [Create VM](#create-vm)
+    - [Setting up Development Environment](#setting-up-development-environment)
 
 ## Google Cloud Platform setup
 
@@ -86,3 +87,7 @@ Host us_accidents
 ```
 
 > **Important note: When you're not using your VM, make sure to stop it in your VM Instances screen in Google Cloud Console.  This way it's not up and running, and using up your credits.**
+
+### Setting up Development Environment
+
+- run `setup.sh` to setup up a development environment for working with Google Cloud Platform, Anaconda, Terraform, Java, Spark, and Pyspark.

@@ -135,7 +135,7 @@ The link to lookerstudio dashboard showing the analytics of US Accidents country
 ## Setup
 
 - Follow instructions in [setup](./setup/) folder to setup the project environment.
-- Start the GCP Virtual Machine.
+- run `setup.sh` to setup up a development environment for working with Google Cloud Platform, Anaconda, Terraform, Java, Spark, and Pyspark.
 
 ## Running the Project
 
