@@ -1,6 +1,23 @@
 # US-Accidents: A Countrywide Traffic Accident Dataset
 
----
+## Table of Contents
+
+- [US-Accidents: A Countrywide Traffic Accident Dataset](#us-accidents-a-countrywide-traffic-accident-dataset)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Project Description](#project-description)
+  - [Purpose](#purpose)
+  - [Dataset Details](#dataset-details)
+  - [Potential Use Cases](#potential-use-cases)
+  - [Technologies](#technologies)
+  - [Architecture](#architecture)
+  - [ETL Pipeline](#etl-pipeline)
+  - [DataWarehouse](#datawarehouse)
+  - [Data building using DBT Cloud](#data-building-using-dbt-cloud)
+  - [Dashboard](#dashboard)
+  - [Setup](#setup)
+  - [Running the Project](#running-the-project)
+  - [Acknowledgements](#acknowledgements)
 
 ## Overview
 
@@ -16,7 +33,7 @@ The US-Accidents: A Countrywide Traffic Accident Dataset is a comprehensive data
   - Analyzing the impact of weather conditions on traffic accidents.
   - Studying accident hotspot locations
 
---- 
+---
 
 ## Purpose
 
@@ -43,23 +60,36 @@ Overall, the US-Accidents: A Countrywide Traffic Accident Dataset is a valuable 
 
 ---
 
-## Architecture
+## Technologies
 
+This project utilizes the following technologies and tools:
+
+- Google Cloud Platform
+  - Google Storage buckets as Data Lake
+  - Google Bigquery datasets as Data Warehouse
+  - Google Looker Studio reports for Data Visualization
+  - Google Compute Engine, if you use a VM on Google's Cloud Platform
+- Terraform as Infrastructure as Code, to deploy Buckets and Datasets on Google Cloud Platform
+- Python script is used to develop our pipeline from extraction to data ingestion
+- Prefect as the orchestration tool
+- Apache Spark and Pyspark for  transformation and processing the data in batches.
+- Parquet columnar data files
+- dbt for some data quality testing, data modelling and transformation, and promotion of data to Production BigQuery dataset
+
+---
+
+## Architecture
 
 The technical architecture for this project is as show below:
 ![architecture](resources/images/architecture/architecture.jpg)
 
-1) `cd` into the [setup/terraform](./setup/terraform_gcp/terraform/) folder. Using terminal run the following commands to create **gcs storage bucket** and **Bigquery Dataset** .
-   - `terraform init`
-   - `terraform plan`
-   - `terraform apply`
+1) Terraform is used to deploy Buckets and Datasets on Google Cloud Platform.
 
 2) Data Extraction is done using Kaggle API.
-  Set up an VM instance in Google cloud. Then, run `pip install kaggle`.
 
 3) Run the ETL pipeline, scheduled using Prefect. Data processing is done using Spark and Data is finally ingested into Google Cloud Storage and Google BigQuery.
 
-4) Data building is done using Data Building Tool (dbt). Visit the [analytics_engineering](./analytics_engineering/dbt_accidents/) folder for detailed information.
+4) Data building is done using Data Building Tool (dbt).
 
 ---
 
@@ -76,7 +106,7 @@ The process involves the following steps :
 - Ingesting the data into data lake in batches
 - Uploading the data to big query dataset.
 
-More details on how to orchestrate the process. Go to [workflow.md](workflow_orchestration/workflow.md).
+More details on how to orchestrate the process. Go to [workflow.md](./workflow/workflow.md).
 
 ---
 
@@ -89,7 +119,7 @@ The project dataWarehouse used is google bigquery. Visit [datawarehouse.md](./da
 ## Data building using DBT Cloud
 
 - dbt cloud is used in this project to build and transform data
-- Visit [dbt](./analytics_engineering/dbt_accidents/README.md) for detailed information on how to run dbt project.
+- Visit [dbt_accidents](./dbt_accidents/README.md) for detailed information on how to run dbt project.
 
 ---
 
@@ -102,28 +132,26 @@ The link to lookerstudio dashboard showing the analytics of US Accidents country
 
 ---
 
-## Developement
+## Setup
 
-### Setting up
+- Follow instructions in [setup](./setup/) folder to setup the project environment.
+- Start the GCP Virtual Machine.
 
-- Ensure you have google cloud platform account with full access to run this project.
+## Running the Project
 
-- cd to [setup/terraform_gcp](./setup/terraform_gcp/terraform/) run the commands below
-  - `terraform init`
-  - `terraform plan`
-  - `terraform apply`
-- cd to [workflow_orchestration](./workflow_orchestration/) and run this command to run the ETL pipeline.
-  - `prefect orion start`
-  - `python pyspark/etl_api_gcs_bq.py`
-- Alternatively, create a prefect deployment by running the following command :
+1) cd to [terraform](./terraform/) run the commands below.
+   - `terraform init`
+   - `terraform plan`
+   - `terraform apply`
+2) cd to [workflow](./workflow/) and run this command to run the ETL pipeline.
+   - `prefect orion start`
+   - `python pyspark/spark.sh`
+
+   More details on how to configure prefect and create deployments in [workflow.md](./workflow/workflow.md)
   
-  ```python
-  prefect deployment build deployments/deployment_flow.py:etl_parent_flow -n "Pyspark-ETL"
-  ```
+3) For BigQuery Datawarehouse run the [biq_query.sql](./data_warehouse/big_query.sql) to create tables in the datawarehouse and perform more advanced queries. Detailed information in [datawarehouse.md](data_warehouse/datawarehouse.md) .
 
-- More details on how to configure prefect and create deployments in [workflow.md](./workflow_orchestration/workflow.md)
-  
-- For BigQuery Datawarehouse visit [datawarehouse.md](data_warehouse/datawarehouse.md) for more information.
+4) To build and transform data using dbt visit [dbt_accidents](./dbt_accidents/) folder for detailed information on how to run dbt models.
 
 ---
 
