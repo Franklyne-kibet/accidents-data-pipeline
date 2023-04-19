@@ -126,7 +126,7 @@ The project dataWarehouse used is google bigquery. Visit [datawarehouse.md](./da
 ## Dashboard
 
 Looker studio dashboard:
-![dashbiard](resources/images/dashboard/dashboard.png)
+![dashboard](resources/images/dashboard/dashboard.png)
 
 The link to lookerstudio dashboard showing the analytics of US Accidents countrywide Traffic Accident Dataset. Visit [dashboard](https://lookerstudio.google.com/reporting/6024d9e4-f49e-42ea-949f-2fc0f67cad39) for more information.
 
