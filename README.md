@@ -112,7 +112,7 @@ More details on how to orchestrate the process. Go to [workflow.md](./workflow/w
 
 ## DataWarehouse
 
-The project dataWarehouse used is google bigquery. Visit [datawarehouse.md](./data_warehouse/datawarehouse.md) for detailed information.
+The project dataWarehouse used is google bigquery. Visit [datawarehouse.md](./Data_Warehouse/datawarehouse.md) for detailed information.
 
 ---
 
@@ -149,7 +149,7 @@ The link to lookerstudio dashboard showing the analytics of US Accidents country
 
    More details on how to configure prefect and create deployments in [workflow.md](./workflow/workflow.md)
   
-3) For BigQuery Datawarehouse run the [biq_query.sql](./data_warehouse/big_query.sql) to create tables in the datawarehouse and perform more advanced queries. Detailed information in [datawarehouse.md](data_warehouse/datawarehouse.md) .
+3) For BigQuery Datawarehouse run the [biq_query.sql](./Data_Warehouse/big_query.sql) to create tables in the datawarehouse and perform more advanced queries. Detailed information in [datawarehouse.md](./Data_Warehouse/datawarehouse.md) .
 
 4) To build and transform data using dbt visit [dbt_accidents](./dbt_accidents/) folder for detailed information on how to run dbt models.
 
